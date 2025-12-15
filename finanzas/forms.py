@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 from django import forms
 
-from .models import Ingreso, Gasto, Vencimiento
+from .models import Ingreso, Gasto
 
 PAST_LIMIT_YEARS = 50
 FUTURE_LIMIT_YEARS = 5
@@ -75,22 +75,3 @@ class GastoForm(forms.ModelForm):
         _validate_monto(value)
         return value
 
-
-class VencimientoForm(forms.ModelForm):
-    class Meta:
-        model = Vencimiento
-        fields = ['fecha', 'concepto', 'monto', 'deuda', 'estado', 'notas']
-        widgets = {
-            'fecha': DateInput(),
-            'monto': forms.NumberInput(attrs={'step': '0.01'}),
-        }
-
-    def clean_fecha(self):
-        value = self.cleaned_data['fecha']
-        _validate_fecha(value)
-        return value
-
-    def clean_monto(self):
-        value = self.cleaned_data['monto']
-        _validate_monto(value)
-        return value

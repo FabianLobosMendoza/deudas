@@ -13,8 +13,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView
 
-from .forms import IngresoForm, GastoForm, VencimientoForm
-from .models import Deuda, Ingreso, Gasto, Vencimiento
+from .forms import IngresoForm, GastoForm
+from .models import Deuda, Ingreso, Gasto
 
 
 def _totales_mes(model, field_name):
@@ -144,29 +144,6 @@ class CrearGastoView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         messages.success(self.request, 'Gasto cargado correctamente.')
-        return super().form_valid(form)
-
-
-class ListaVencimientosView(LoginRequiredMixin, ListView):
-    model = Vencimiento
-    template_name = 'finanzas/vencimientos.html'
-    context_object_name = 'vencimientos'
-    ordering = ['fecha', 'concepto']
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['hoy'] = date.today()
-        return context
-
-
-class CrearVencimientoView(LoginRequiredMixin, CreateView):
-    model = Vencimiento
-    form_class = VencimientoForm
-    template_name = 'finanzas/vencimiento_form.html'
-    success_url = reverse_lazy('finanzas:vencimientos')
-
-    def form_valid(self, form):
-        messages.success(self.request, 'Vencimiento cargado correctamente.')
         return super().form_valid(form)
 
 

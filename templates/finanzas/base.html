@@ -126,7 +126,7 @@
             <nav>
                 <a href="{% url 'finanzas:dashboard' %}">Resumen</a>
                 <a href="{% url 'finanzas:lista_deudas' %}">Deudas</a>
-                <a href="{% url 'finanzas:vencimientos' %}">Vencimientos</a>
+                <a href="{% url 'finanzas:lista_gastos' %}?ver_todos=0">Vencimientos</a>
             </nav>
         </div>
         {% if request.user.is_authenticated %}
