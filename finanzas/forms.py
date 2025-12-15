@@ -11,6 +11,10 @@ FUTURE_LIMIT_YEARS = 5
 class DateInput(forms.DateInput):
     input_type = 'date'
 
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('format', '%Y-%m-%d')
+        super().__init__(*args, **kwargs)
+
 
 def _validate_fecha(value):
     today = date.today()
@@ -74,4 +78,3 @@ class GastoForm(forms.ModelForm):
         value = self.cleaned_data['monto']
         _validate_monto(value)
         return value
-
