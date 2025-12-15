@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import models
 
 
@@ -12,7 +14,12 @@ class Entidad(models.Model):
     nombre = models.CharField(max_length=100)
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default='banco')
 
-    def __str__(self):
+    class Meta:
+        verbose_name = 'Entidad'
+        verbose_name_plural = 'Entidades'
+        ordering = ['nombre']
+
+    def __str__(self) -> str:
         return self.nombre
 
 
@@ -67,8 +74,18 @@ class Deuda(models.Model):
 
     notas = models.TextField(blank=True)
 
-    def __str__(self):
-        return f'{self.entidad} - {self.descripcion or self.get_tipo_deuda_display()}'
+    class Meta:
+        verbose_name = 'Deuda'
+        verbose_name_plural = 'Deudas'
+        ordering = ['prioridad', 'entidad__nombre']
+
+    def __str__(self) -> str:
+        return f'{self.entidad} - {self.get_tipo_deuda_display()}'
+
+    @property
+    def tipo_legible(self) -> str:
+        """Devuelve el tipo de deuda en texto legible."""
+        return self.get_tipo_deuda_display()
 
 
 class Ingreso(models.Model):
@@ -83,9 +100,18 @@ class Ingreso(models.Model):
     tipo = models.CharField(max_length=20, choices=TIPO_INGRESO_CHOICES)
     descripcion = models.CharField(max_length=255, blank=True)
     monto = models.DecimalField(max_digits=15, decimal_places=2)
+    confirmado = models.BooleanField(
+        default=False,
+        help_text='Marcar cuando el ingreso ya está cobrado.',
+    )
 
-    def __str__(self):
-        return f'{self.fecha} - {self.get_tipo_display()} - {self.monto}'
+    class Meta:
+        verbose_name = 'Ingreso'
+        verbose_name_plural = 'Ingresos'
+        ordering = ['-fecha', '-id']
+
+    def __str__(self) -> str:
+        return f'{self.fecha} - {self.get_tipo_display()}'
 
 
 class Gasto(models.Model):
@@ -104,14 +130,23 @@ class Gasto(models.Model):
     )
     descripcion = models.CharField(max_length=255, blank=True)
     monto = models.DecimalField(max_digits=15, decimal_places=2)
+    pagado = models.BooleanField(
+        default=False,
+        help_text='Marcar cuando el gasto ya está pagado.',
+    )
 
     deuda_relacionada = models.ForeignKey(
         Deuda, null=True, blank=True, on_delete=models.SET_NULL,
         help_text='Si este gasto es el pago de una deuda, vinculalo acá.',
     )
 
-    def __str__(self):
-        return f'{self.fecha} - {self.categoria} - {self.monto}'
+    class Meta:
+        verbose_name = 'Gasto'
+        verbose_name_plural = 'Gastos'
+        ordering = ['-fecha', '-id']
+
+    def __str__(self) -> str:
+        return f'{self.fecha} - {self.categoria}'
 
 
 class Vencimiento(models.Model):
@@ -136,5 +171,15 @@ class Vencimiento(models.Model):
     )
     notas = models.TextField(blank=True)
 
-    def __str__(self):
-        return f'{self.fecha} - {self.concepto} ({self.monto})'
+    class Meta:
+        verbose_name = 'Vencimiento'
+        verbose_name_plural = 'Vencimientos'
+        ordering = ['fecha', 'concepto']
+
+    def __str__(self) -> str:
+        return f'{self.fecha} - {self.concepto}'
+
+    @property
+    def esta_vencido(self) -> bool:
+        """Indica si la fecha está vencida respecto de hoy."""
+        return self.fecha < date.today() and self.estado != 'pagado'

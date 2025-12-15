@@ -5,6 +5,14 @@
 {% block content %}
 <h2>Resumen del mes</h2>
 
+<div class="top-actions">
+    <a class="btn" href="{% url 'finanzas:nuevo_ingreso' %}">Cargar ingreso</a>
+    <a class="btn" href="{% url 'finanzas:nuevo_gasto' %}">Cargar gasto</a>
+    <a class="btn" href="{% url 'finanzas:nuevo_vencimiento' %}">Cargar vencimiento</a>
+    <a class="btn" href="{% url 'finanzas:lista_ingresos' %}">Ver ingresos</a>
+    <a class="btn" href="{% url 'finanzas:lista_gastos' %}">Ver gastos</a>
+</div>
+
 <div class="cards">
     <div class="card">
         <h2>Deuda total</h2>

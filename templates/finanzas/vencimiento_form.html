@@ -1,0 +1,30 @@
+{% extends "finanzas/base.html" %}
+
+{% block title %}Nuevo vencimiento{% endblock %}
+
+{% block content %}
+<h2>Nuevo vencimiento</h2>
+<div class="top-actions">
+    <a class="btn" href="{% url 'finanzas:vencimientos' %}">Volver a vencimientos</a>
+</div>
+<form method="post" style="background:white;padding:1rem 1.25rem;border-radius:0.75rem;box-shadow:0 1px 3px rgba(0,0,0,0.08);max-width:520px;">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+        <div style="color:#b91c1c;font-size:0.9rem;margin-bottom:0.5rem;">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+    <div style="display:grid;gap:0.75rem;">
+        {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}" style="font-weight:600;display:block;margin-bottom:0.25rem;">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div style="color:#b91c1c;font-size:0.9rem;">{{ field.errors|striptags }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn" style="margin-top:1rem;">Guardar vencimiento</button>
+</form>
+{% endblock %}

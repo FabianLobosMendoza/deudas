@@ -1,0 +1,44 @@
+{% extends "finanzas/base.html" %}
+
+{% block title %}Gastos{% endblock %}
+
+{% block content %}
+<h2>Gastos</h2>
+<div class="top-actions">
+    <a class="btn" href="{% url 'finanzas:nuevo_gasto' %}">Cargar gasto</a>
+    <a class="btn" href="{% url 'finanzas:dashboard' %}">Volver al resumen</a>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Categoría</th>
+                <th>Descripción</th>
+                <th>Monto</th>
+                <th>Pagado</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for gasto in gastos %}
+            <tr>
+                <td>{{ gasto.fecha }}</td>
+                <td>{{ gasto.get_tipo_display }}</td>
+                <td>{{ gasto.categoria }}</td>
+                <td>{{ gasto.descripcion }}</td>
+                <td>${{ gasto.monto|floatformat:2 }}</td>
+                <td>
+                    <input type="checkbox" name="pagado" value="{{ gasto.id }}" {% if gasto.pagado %}checked{% endif %}>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6">No hay gastos cargados.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit" class="btn" style="margin-top:1rem;">Guardar cambios</button>
+</form>
+{% endblock %}

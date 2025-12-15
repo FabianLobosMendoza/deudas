@@ -1,0 +1,42 @@
+{% extends "finanzas/base.html" %}
+
+{% block title %}Ingresos{% endblock %}
+
+{% block content %}
+<h2>Ingresos</h2>
+<div class="top-actions">
+    <a class="btn" href="{% url 'finanzas:nuevo_ingreso' %}">Cargar ingreso</a>
+    <a class="btn" href="{% url 'finanzas:dashboard' %}">Volver al resumen</a>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Monto</th>
+                <th>Cobrado</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ingreso in ingresos %}
+            <tr>
+                <td>{{ ingreso.fecha }}</td>
+                <td>{{ ingreso.get_tipo_display }}</td>
+                <td>{{ ingreso.descripcion }}</td>
+                <td>${{ ingreso.monto|floatformat:2 }}</td>
+                <td>
+                    <input type="checkbox" name="confirmado" value="{{ ingreso.id }}" {% if ingreso.confirmado %}checked{% endif %}>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5">No hay ingresos cargados.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit" class="btn" style="margin-top:1rem;">Guardar cambios</button>
+</form>
+{% endblock %}
