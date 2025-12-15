@@ -30,7 +30,16 @@ def _totales_mes(model, field_name):
 
 @login_required
 def dashboard(request):
-    """Dashboard resumido con totales y vencimientos próximos."""
+    """
+    Renderiza el dashboard principal.
+
+    Params:
+        request (HttpRequest): petición HTTP del usuario autenticado.
+
+    Retorna:
+        HttpResponse con los totales del mes, relación cuotas/ingresos y
+        los gastos pendientes en los próximos 30 días.
+    """
     today = date.today()
     treinta_dias = today + timedelta(days=30)
 
@@ -71,6 +80,12 @@ def dashboard(request):
 
 
 class ListaIngresosView(LoginRequiredMixin, ListView):
+    """
+    Lista de ingresos.
+
+    Muestra ingresos filtrados según el switch "ver_todos" (solo no cobrados
+    por defecto) y permite marcarlos como confirmados vía POST.
+    """
     model = Ingreso
     template_name = 'finanzas/ingresos_list.html'
     context_object_name = 'ingresos'
@@ -90,6 +105,12 @@ class ListaIngresosView(LoginRequiredMixin, ListView):
         return context
 
     def post(self, request, *args, **kwargs):
+        """
+        Marca ingresos como confirmados según los checkboxes.
+
+        Params:
+            request (HttpRequest): incluye lista 'confirmado' con ids marcados.
+        """
         marcados = request.POST.getlist('confirmado')
         Ingreso.objects.update(confirmado=False)
         if marcados:
@@ -99,6 +120,11 @@ class ListaIngresosView(LoginRequiredMixin, ListView):
 
 
 class CrearIngresoView(LoginRequiredMixin, CreateView):
+    """
+    Alta de ingresos.
+
+    Usa IngresoForm para validar y mostrar el formulario.
+    """
     model = Ingreso
     form_class = IngresoForm
     template_name = 'finanzas/ingreso_form.html'
@@ -110,6 +136,12 @@ class CrearIngresoView(LoginRequiredMixin, CreateView):
 
 
 class EditarIngresoView(LoginRequiredMixin, UpdateView):
+    """
+    Edición de ingresos existentes.
+
+    Params:
+        pk (int): identificador del ingreso a editar.
+    """
     model = Ingreso
     form_class = IngresoForm
     template_name = 'finanzas/ingreso_form.html'
@@ -122,6 +154,12 @@ class EditarIngresoView(LoginRequiredMixin, UpdateView):
 
 
 class ListaGastosView(LoginRequiredMixin, ListView):
+    """
+    Lista de gastos.
+
+    Filtra por defecto gastos no pagados; el switch "ver_todos" muestra todos.
+    Permite marcarlos como pagados vía POST.
+    """
     model = Gasto
     template_name = 'finanzas/gastos_list.html'
     context_object_name = 'gastos'
@@ -141,6 +179,12 @@ class ListaGastosView(LoginRequiredMixin, ListView):
         return context
 
     def post(self, request, *args, **kwargs):
+        """
+        Marca gastos como pagados según los checkboxes.
+
+        Params:
+            request (HttpRequest): incluye lista 'pagado' con ids marcados.
+        """
         marcados = request.POST.getlist('pagado')
         Gasto.objects.update(pagado=False)
         if marcados:
@@ -150,6 +194,11 @@ class ListaGastosView(LoginRequiredMixin, ListView):
 
 
 class CrearGastoView(LoginRequiredMixin, CreateView):
+    """
+    Alta de gastos.
+
+    Usa GastoForm para validar y mostrar el formulario.
+    """
     model = Gasto
     form_class = GastoForm
     template_name = 'finanzas/gasto_form.html'
@@ -161,6 +210,12 @@ class CrearGastoView(LoginRequiredMixin, CreateView):
 
 
 class EditarGastoView(LoginRequiredMixin, UpdateView):
+    """
+    Edición de gastos existentes.
+
+    Params:
+        pk (int): identificador del gasto a editar.
+    """
     model = Gasto
     form_class = GastoForm
     template_name = 'finanzas/gasto_form.html'
@@ -173,6 +228,9 @@ class EditarGastoView(LoginRequiredMixin, UpdateView):
 
 
 class ListaDeudasView(LoginRequiredMixin, ListView):
+    """
+    Lista de deudas ordenadas por prioridad y entidad.
+    """
     model = Deuda
     template_name = 'finanzas/deudas_list.html'
     context_object_name = 'deudas'
@@ -181,7 +239,14 @@ class ListaDeudasView(LoginRequiredMixin, ListView):
 
 @login_required
 def importar_exportar(request):
-    """Vista para importar y exportar CSV mediante management commands."""
+    """
+    Vista para importar/exportar CSV mediante management commands.
+
+    Botones:
+        - Exportar CSV: ejecuta exportar_csv y descarga un ZIP.
+        - Importar CSV: sube uno o varios CSV, los guarda en imports/ y corre
+          importar_csv.
+    """
     exports_dir = Path('exports')
     imports_dir = Path('imports')
 

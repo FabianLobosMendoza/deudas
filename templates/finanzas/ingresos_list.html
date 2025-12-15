@@ -5,7 +5,9 @@
 {% block content %}
 <h2>Ingresos</h2>
 <div class="top-actions">
+    <!-- Botón: ir a formulario de nuevo ingreso -->
     <a class="btn" href="{% url 'finanzas:nuevo_ingreso' %}">Cargar ingreso</a>
+    <!-- Botón: volver al dashboard -->
     <a class="btn" href="{% url 'finanzas:dashboard' %}">Volver al resumen</a>
 </div>
 
@@ -65,6 +67,7 @@
         {% endfor %}
         </tbody>
     </table>
+    <!-- Botón: guardar cambios de checkboxes de cobrados -->
     <button type="submit" class="btn" style="margin-top:1rem;">Guardar cambios</button>
 </form>
 

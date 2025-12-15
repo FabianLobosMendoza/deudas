@@ -3,6 +3,7 @@
 {% block title %}Nuevo gasto{% endblock %}
 
 {% block content %}
+<!-- Formulario: crear/editar gasto -->
 <h2>{{ form_title|default:"Nuevo gasto" }}</h2>
 <div class="top-actions">
     <a class="btn" href="{% url 'finanzas:dashboard' %}">Volver al resumen</a>
@@ -25,6 +26,7 @@
             </div>
         {% endfor %}
     </div>
+    <!-- Botón: guardar gasto -->
     <button type="submit" class="btn" style="margin-top:1rem;">Guardar gasto</button>
 </form>
 {% endblock %}

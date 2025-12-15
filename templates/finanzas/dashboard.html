@@ -6,8 +6,11 @@
 <h2>Resumen del mes</h2>
 
 <div class="top-actions">
+    <!-- Botón: ir a listado/altas de ingresos -->
     <a class="btn" href="{% url 'finanzas:lista_ingresos' %}">Ingresos</a>
+    <!-- Botón: ir a listado/altas de gastos -->
     <a class="btn" href="{% url 'finanzas:lista_gastos' %}">Gastos</a>
+    <!-- Botón: ir a importar/exportar CSV -->
     <a class="btn" href="{% url 'finanzas:importar_exportar' %}">Importar / Exportar CSV</a>
 </div>
 
