@@ -1,0 +1,16 @@
+@echo off
+setlocal
+
+REM Activar entorno virtual si existe
+if exist "venv\Scripts\activate.bat" call "venv\Scripts\activate.bat"
+
+REM Iniciar el servidor en una ventana nueva
+start "django-server" cmd /c "python manage.py runserver"
+
+REM Dar un instante antes de abrir el navegador
+timeout /t 2 /nobreak >nul
+
+REM Abrir la página principal
+start "" http://127.0.0.1:8000/
+
+endlocal

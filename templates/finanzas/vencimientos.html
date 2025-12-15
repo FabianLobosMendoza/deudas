@@ -1,0 +1,36 @@
+{% extends "finanzas/base.html" %}
+
+{% block title %}Vencimientos - Tablero financiero{% endblock %}
+
+{% block content %}
+<h2>Vencimientos</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Concepto</th>
+            <th>Monto</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for v in vencimientos %}
+        <tr>
+            <td>{{ v.fecha }}</td>
+            <td>{{ v.concepto }}</td>
+            <td>${{ v.monto|floatformat:2 }}</td>
+            <td>
+                {% if v.estado == 'pendiente' %}
+                    <span class="badge badge-pendiente">Pendiente</span>
+                {% else %}
+                    <span class="badge badge-pagado">Pagado</span>
+                {% endif %}
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="4">No hay vencimientos cargados.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

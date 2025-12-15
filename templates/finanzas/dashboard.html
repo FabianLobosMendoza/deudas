@@ -1,0 +1,64 @@
+{% extends "finanzas/base.html" %}
+
+{% block title %}Resumen - Tablero financiero{% endblock %}
+
+{% block content %}
+<h2>Resumen del mes</h2>
+
+<div class="cards">
+    <div class="card">
+        <h2>Deuda total</h2>
+        <div class="value">${{ deuda_total|floatformat:2 }}</div>
+    </div>
+    <div class="card">
+        <h2>Cuota fija mensual total</h2>
+        <div class="value">${{ cuota_fija_total|floatformat:2 }}</div>
+    </div>
+    <div class="card">
+        <h2>Ingresos del mes</h2>
+        <div class="value">${{ ingresos_mes|floatformat:2 }}</div>
+    </div>
+    <div class="card">
+        <h2>Gastos del mes</h2>
+        <div class="value">${{ gastos_mes|floatformat:2 }}</div>
+    </div>
+    <div class="card">
+        <h2>Saldo del mes</h2>
+        <div class="value">${{ saldo_mes|floatformat:2 }}</div>
+    </div>
+    <div class="card">
+        <h2>Cuotas / Ingresos</h2>
+        <div class="value">{{ relacion_cuotas_ingresos|floatformat:1 }}%</div>
+    </div>
+</div>
+
+<h2>Vencimientos próximos (30 días)</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Concepto</th>
+            <th>Monto</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for v in vencimientos_proximos %}
+        <tr>
+            <td>{{ v.fecha }}</td>
+            <td>{{ v.concepto }}</td>
+            <td>${{ v.monto|floatformat:2 }}</td>
+            <td>
+                {% if v.estado == 'pendiente' %}
+                    <span class="badge badge-pendiente">Pendiente</span>
+                {% else %}
+                    <span class="badge badge-pagado">Pagado</span>
+                {% endif %}
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="4">No hay vencimientos próximos.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
