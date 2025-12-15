@@ -113,6 +113,29 @@ class Ingreso(models.Model):
     def __str__(self) -> str:
         return f'{self.fecha} - {self.get_tipo_display()}'
 
+    @property
+    def dias_para_cobro(self) -> int | None:
+        """Días hasta la fecha del ingreso (si sirve como fecha esperada)."""
+        if not self.fecha:
+            return None
+        return (self.fecha - date.today()).days
+
+    @property
+    def estado_cobro(self) -> str:
+        """Estado según fecha y si está confirmado."""
+        if self.confirmado:
+            return 'cobrado'
+        if not self.fecha:
+            return 'sin_fecha'
+        dias = self.dias_para_cobro
+        if dias is None:
+            return 'sin_fecha'
+        if dias < 0:
+            return 'atrasado'
+        if dias == 0:
+            return 'hoy'
+        return 'pendiente'
+
 
 class Gasto(models.Model):
     TIPO_GASTO_CHOICES = [
@@ -147,6 +170,29 @@ class Gasto(models.Model):
 
     def __str__(self) -> str:
         return f'{self.fecha} - {self.categoria}'
+
+    @property
+    def dias_para_vencer(self) -> int | None:
+        """Días hasta la fecha del gasto (si se usa como vencimiento)."""
+        if not self.fecha:
+            return None
+        return (self.fecha - date.today()).days
+
+    @property
+    def estado_vencimiento(self) -> str:
+        """Estado según fecha y si está pagado."""
+        if self.pagado:
+            return 'pagado'
+        if not self.fecha:
+            return 'sin_fecha'
+        dias = self.dias_para_vencer
+        if dias is None:
+            return 'sin_fecha'
+        if dias < 0:
+            return 'vencido'
+        if dias == 0:
+            return 'hoy'
+        return 'por_vencer'
 
 
 class Vencimiento(models.Model):

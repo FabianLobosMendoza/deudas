@@ -13,4 +13,5 @@ urlpatterns = [
     path('ingresos/nuevo/', views.CrearIngresoView.as_view(), name='nuevo_ingreso'),
     path('gastos/nuevo/', views.CrearGastoView.as_view(), name='nuevo_gasto'),
     path('vencimientos/nuevo/', views.CrearVencimientoView.as_view(), name='nuevo_vencimiento'),
+    path('importar-exportar/', views.importar_exportar, name='importar_exportar'),
 ]

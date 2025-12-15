@@ -9,6 +9,17 @@
     <a class="btn" href="{% url 'finanzas:dashboard' %}">Volver al resumen</a>
 </div>
 
+<div style="margin:0.5rem 0 1rem;">
+    <form method="get" id="filtro-ingresos" style="display:flex;align-items:center;gap:0.5rem;">
+        <label for="ver_todos" style="font-weight:600;">Ver todos</label>
+        <label class="switch">
+            <input type="checkbox" id="ver_todos" name="ver_todos" value="1" {% if ver_todos %}checked{% endif %} onchange="document.getElementById('filtro-ingresos').submit();">
+            <span class="slider"></span>
+        </label>
+        <span style="font-size:0.9rem;color:#4b5563;">(Por defecto se muestran solo no cobrados)</span>
+    </form>
+</div>
+
 <form method="post">
     {% csrf_token %}
     <table>
@@ -18,6 +29,7 @@
                 <th>Tipo</th>
                 <th>Descripción</th>
                 <th>Monto</th>
+                <th>Estado</th>
                 <th>Cobrado</th>
             </tr>
         </thead>
@@ -29,14 +41,63 @@
                 <td>{{ ingreso.descripcion }}</td>
                 <td>${{ ingreso.monto|floatformat:2 }}</td>
                 <td>
+                    {% if ingreso.confirmado %}
+                        <span class="badge badge-pagado">Cobrado</span>
+                    {% else %}
+                        {% if ingreso.estado_cobro == 'atrasado' %}
+                            <span class="badge badge-alta">Atrasado</span>
+                        {% elif ingreso.estado_cobro == 'hoy' %}
+                            <span class="badge badge-media">Hoy</span>
+                        {% elif ingreso.estado_cobro == 'pendiente' %}
+                            <span class="badge badge-media">En {{ ingreso.dias_para_cobro }} días</span>
+                        {% else %}
+                            <span class="badge">Pendiente</span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td>
                     <input type="checkbox" name="confirmado" value="{{ ingreso.id }}" {% if ingreso.confirmado %}checked{% endif %}>
                 </td>
             </tr>
         {% empty %}
-            <tr><td colspan="5">No hay ingresos cargados.</td></tr>
+            <tr><td colspan="6">No hay ingresos cargados.</td></tr>
         {% endfor %}
         </tbody>
     </table>
     <button type="submit" class="btn" style="margin-top:1rem;">Guardar cambios</button>
 </form>
+
+<style>
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+.switch input {display:none;}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #d1d5db;
+  transition: .2s;
+  border-radius: 999px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px; width: 18px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  transition: .2s;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+input:checked + .slider {
+  background-color: #1f2937;
+}
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+</style>
 {% endblock %}

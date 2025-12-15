@@ -6,11 +6,10 @@
 <h2>Resumen del mes</h2>
 
 <div class="top-actions">
-    <a class="btn" href="{% url 'finanzas:nuevo_ingreso' %}">Cargar ingreso</a>
-    <a class="btn" href="{% url 'finanzas:nuevo_gasto' %}">Cargar gasto</a>
+    <a class="btn" href="{% url 'finanzas:lista_ingresos' %}">Ingresos</a>
+    <a class="btn" href="{% url 'finanzas:lista_gastos' %}">Gastos</a>
     <a class="btn" href="{% url 'finanzas:nuevo_vencimiento' %}">Cargar vencimiento</a>
-    <a class="btn" href="{% url 'finanzas:lista_ingresos' %}">Ver ingresos</a>
-    <a class="btn" href="{% url 'finanzas:lista_gastos' %}">Ver gastos</a>
+    <a class="btn" href="{% url 'finanzas:importar_exportar' %}">Importar / Exportar CSV</a>
 </div>
 
 <div class="cards">
@@ -40,27 +39,31 @@
     </div>
 </div>
 
-<h2>Vencimientos próximos (30 días)</h2>
+<h2>Gastos por vencer (30 días)</h2>
 <table>
     <thead>
         <tr>
             <th>Fecha</th>
-            <th>Concepto</th>
+            <th>Descripción</th>
             <th>Monto</th>
             <th>Estado</th>
         </tr>
     </thead>
     <tbody>
-    {% for v in vencimientos_proximos %}
+    {% for g in gastos_pendientes %}
         <tr>
-            <td>{{ v.fecha }}</td>
-            <td>{{ v.concepto }}</td>
-            <td>${{ v.monto|floatformat:2 }}</td>
+            <td>{{ g.fecha }}</td>
+            <td>{{ g.descripcion }}</td>
+            <td>${{ g.monto|floatformat:2 }}</td>
             <td>
-                {% if v.estado == 'pendiente' %}
-                    <span class="badge badge-pendiente">Pendiente</span>
+                {% if g.estado_vencimiento == 'vencido' %}
+                    <span class="badge badge-alta">Vencido</span>
+                {% elif g.estado_vencimiento == 'hoy' %}
+                    <span class="badge badge-media">Vence hoy</span>
+                {% elif g.estado_vencimiento == 'por_vencer' %}
+                    <span class="badge badge-media">En {{ g.dias_para_vencer }} días</span>
                 {% else %}
-                    <span class="badge badge-pagado">Pagado</span>
+                    <span class="badge">Pendiente</span>
                 {% endif %}
             </td>
         </tr>

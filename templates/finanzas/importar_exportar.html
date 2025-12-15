@@ -1,0 +1,27 @@
+{% extends "finanzas/base.html" %}
+
+{% block title %}Importación y Exportación CSV{% endblock %}
+
+{% block content %}
+<h2>Importación y Exportación CSV</h2>
+
+<div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+    <div class="card">
+        <h3>Exportar CSV</h3>
+        <p>Genera los archivos CSV y descarga un ZIP con todos.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="export" value="1" class="btn">Exportar CSV</button>
+        </form>
+    </div>
+    <div class="card">
+        <h3>Importar CSV</h3>
+        <p>Sube uno o varios CSV (entidades, deudas, ingresos, gastos, vencimientos).</p>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="csv_files" multiple accept=".csv" style="margin:0.5rem 0;">
+            <button type="submit" name="import" value="1" class="btn">Importar CSV</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
