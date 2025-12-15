@@ -12,6 +12,7 @@ from django.http import FileResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView
+from django.views.generic.edit import UpdateView
 
 from .forms import IngresoForm, GastoForm
 from .models import Deuda, Ingreso, Gasto
@@ -108,6 +109,18 @@ class CrearIngresoView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+class EditarIngresoView(LoginRequiredMixin, UpdateView):
+    model = Ingreso
+    form_class = IngresoForm
+    template_name = 'finanzas/ingreso_form.html'
+    success_url = reverse_lazy('finanzas:lista_ingresos')
+    extra_context = {'form_title': 'Editar ingreso'}
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Ingreso actualizado correctamente.')
+        return super().form_valid(form)
+
+
 class ListaGastosView(LoginRequiredMixin, ListView):
     model = Gasto
     template_name = 'finanzas/gastos_list.html'
@@ -144,6 +157,18 @@ class CrearGastoView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         messages.success(self.request, 'Gasto cargado correctamente.')
+        return super().form_valid(form)
+
+
+class EditarGastoView(LoginRequiredMixin, UpdateView):
+    model = Gasto
+    form_class = GastoForm
+    template_name = 'finanzas/gasto_form.html'
+    success_url = reverse_lazy('finanzas:lista_gastos')
+    extra_context = {'form_title': 'Editar gasto'}
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Gasto actualizado correctamente.')
         return super().form_valid(form)
 
 

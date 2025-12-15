@@ -11,12 +11,12 @@
 
 <div style="margin:0.5rem 0 1rem;">
     <form method="get" id="filtro-gastos" style="display:flex;align-items:center;gap:0.5rem;">
-        <label for="ver_todos" style="font-weight:600;">Ver todos</label>
+        <span style="font-weight:600;">Pendientes</span>
         <label class="switch">
             <input type="checkbox" id="ver_todos" name="ver_todos" value="1" {% if ver_todos %}checked{% endif %} onchange="document.getElementById('filtro-gastos').submit();">
             <span class="slider"></span>
         </label>
-        <span style="font-size:0.9rem;color:#4b5563;">(Por defecto se muestran solo no pagados)</span>
+        <span style="font-weight:600;">Todos</span>
     </form>
 </div>
 
@@ -42,6 +42,7 @@
                 <td>{{ gasto.categoria }}</td>
                 <td>{{ gasto.descripcion }}</td>
                 <td>${{ gasto.monto|floatformat:2 }}</td>
+                <td><a class="btn" href="{% url 'finanzas:editar_gasto' gasto.pk %}">Editar</a></td>
                 <td>
                     {% if gasto.pagado %}
                         <span class="badge badge-pagado">Pagado</span>
@@ -62,7 +63,7 @@
                 </td>
             </tr>
         {% empty %}
-            <tr><td colspan="7">No hay gastos cargados.</td></tr>
+            <tr><td colspan="8">No hay gastos cargados.</td></tr>
         {% endfor %}
         </tbody>
     </table>

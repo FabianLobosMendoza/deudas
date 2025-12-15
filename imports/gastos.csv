@@ -1,0 +1,6 @@
+fecha,tipo,categoria,descripcion,monto,pagado,deuda_relacionada
+2025-11-27,deuda,tarjeta,ICBC Mastercard – pago mínimo,117915.03,true,Mastercard ICBC
+2025-12-02,deuda,tarjeta,ICBC Visa – pago mínimo,72040.00,true,Visa ICBC
+2025-12-05,deuda,tarjeta,Visa Galicia – pago mínimo,62120.00,true,Visa Signature Galicia
+2025-12-19,deuda,tarjeta,Mastercard Galicia – pago total resumen noviembre,1807413.83,true,Mastercard Galicia - Resumen noviembre 2025
+

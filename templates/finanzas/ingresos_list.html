@@ -11,12 +11,12 @@
 
 <div style="margin:0.5rem 0 1rem;">
     <form method="get" id="filtro-ingresos" style="display:flex;align-items:center;gap:0.5rem;">
-        <label for="ver_todos" style="font-weight:600;">Ver todos</label>
+        <span style="font-weight:600;">Pendientes</span>
         <label class="switch">
             <input type="checkbox" id="ver_todos" name="ver_todos" value="1" {% if ver_todos %}checked{% endif %} onchange="document.getElementById('filtro-ingresos').submit();">
             <span class="slider"></span>
         </label>
-        <span style="font-size:0.9rem;color:#4b5563;">(Por defecto se muestran solo no cobrados)</span>
+        <span style="font-weight:600;">Todos</span>
     </form>
 </div>
 
@@ -40,6 +40,7 @@
                 <td>{{ ingreso.get_tipo_display }}</td>
                 <td>{{ ingreso.descripcion }}</td>
                 <td>${{ ingreso.monto|floatformat:2 }}</td>
+                <td><a class="btn" href="{% url 'finanzas:editar_ingreso' ingreso.pk %}">Editar</a></td>
                 <td>
                     {% if ingreso.confirmado %}
                         <span class="badge badge-pagado">Cobrado</span>
@@ -60,7 +61,7 @@
                 </td>
             </tr>
         {% empty %}
-            <tr><td colspan="6">No hay ingresos cargados.</td></tr>
+            <tr><td colspan="7">No hay ingresos cargados.</td></tr>
         {% endfor %}
         </tbody>
     </table>

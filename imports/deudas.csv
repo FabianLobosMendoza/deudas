@@ -1,0 +1,11 @@
+entidad,tipo_deuda,descripcion,monto_total,pago_minimo,fecha_vencimiento,proximo_pago,estado,prioridad,cuota_mensual_aprox,cuotas_restantes,notas
+Banco Galicia,tarjeta,Visa Signature Galicia,836997.11,62120.00,2025-12-05,2026-01-05,al_dia,alta,62120.00,,Resumen dic 2025. Tiene cuotas grandes en 2026.
+Banco ICBC,tarjeta,Mastercard ICBC,1474484.00,117915.03,2025-11-27,,al_dia,alta,117915.03,,Resumen nov 2025. Pago mínimo realizado.
+Banco ICBC,tarjeta,Visa ICBC,1153944.00,72040.00,2025-12-02,,al_dia,alta,72040.00,,Resumen dic 2025. Pago mínimo realizado.
+Banco Galicia,prestamo,Préstamo personal Galicia,981651.84,981651.84,2026-01-05,2026-01-05,al_dia,media,981651.84,7,Cuota 5 de 12. Se regularizó recientemente.
+Mercado Pago,prestamo,Préstamo (cuota 3 de 6),64367.74,0,2026-01-12,2026-01-12,en_curso,media,64367.74,3,Cuota 3 de 6.
+Mercado Pago,prestamo,Préstamo (cuota 7 de 9),15017.39,0,2026-01-12,2026-01-12,en_curso,media,15017.39,3,Cuota 7 de 9.
+Banco Galicia,tarjeta,Mastercard Galicia - Resumen noviembre 2025,1807413.83,836970.00,2025-12-19,2025-12-19,al_dia,alta,0,,Pago total del resumen noviembre 2025. Cuotas fuertes entre feb–jun 2026.
+Escuela de Renzo,educacion,Cuota escolar Renzo,,,,,,alta,,,Completar monto y fechas según la realidad.
+Escuela de Nazareno,educacion,Cuota escolar Nazareno,,,,,,alta,,,Completar monto y fechas según la realidad.
+

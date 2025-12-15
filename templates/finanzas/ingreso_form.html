@@ -3,7 +3,7 @@
 {% block title %}Nuevo ingreso{% endblock %}
 
 {% block content %}
-<h2>Nuevo ingreso</h2>
+<h2>{{ form_title|default:"Nuevo ingreso" }}</h2>
 <div class="top-actions">
     <a class="btn" href="{% url 'finanzas:dashboard' %}">Volver al resumen</a>
 </div>

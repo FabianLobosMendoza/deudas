@@ -1,0 +1,3 @@
+fecha,tipo,descripcion,monto,confirmado
+2025-12-01,sueldo,Sueldo diciembre 2025,2860818.00,true
+2025-12-15,aguinaldo,Aguinaldo diciembre 2025 (monto a completar),0.00,false

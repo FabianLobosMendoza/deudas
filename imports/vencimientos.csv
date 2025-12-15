@@ -1,0 +1,8 @@
+fecha,concepto,monto,deuda,estado,notas
+2025-11-27,ICBC Mastercard – pago mínimo,117915.03,Mastercard ICBC,pagado,Resumen con vencimiento 27/11/2025.
+2025-12-02,ICBC Visa – pago mínimo,72040.00,Visa ICBC,pagado,Resumen con vencimiento 02/12/2025.
+2025-12-05,Visa Galicia Signature – pago mínimo,62120.00,Visa Signature Galicia,pagado,Resumen diciembre 2025.
+2025-12-19,Mastercard Galicia – pago total resumen noviembre,1807413.83,Mastercard Galicia - Resumen noviembre 2025,pagado,Pago total del resumen noviembre 2025.
+2026-01-05,Préstamo Galicia – cuota 5 de 12,981651.84,Préstamo personal Galicia,pendiente,Cuota 5/12. Vence 05/01/2026.
+2026-01-12,Mercado Pago – préstamo 1 cuota 3 de 6,64367.74,Préstamo (cuota 3 de 6),pendiente,Cuota 3/6. Vence 12/01/2026.
+2026-01-12,Mercado Pago – préstamo 2 cuota 7 de 9,15017.39,Préstamo (cuota 7 de 9),pendiente,Cuota 7/9. Vence 12/01/2026.
