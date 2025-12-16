@@ -73,50 +73,38 @@ def dashboard(request):
     saldo_acumulado = 0
 
     for dia in dias_labels:
-        ingresos_conf = (
-            Ingreso.objects.filter(
-                fecha__year=selected_date.year,
-                fecha__month=selected_date.month,
-                fecha__day=dia,
-                confirmado=True,
-            )
-            .aggregate(total=Sum('monto'))
-            .get('total')
-            or 0
+        fecha_iter = date(selected_date.year, selected_date.month, dia)
+        es_futuro = fecha_iter > today
+
+        ingresos_qs = Ingreso.objects.filter(
+            fecha__year=selected_date.year,
+            fecha__month=selected_date.month,
+            fecha__day=dia,
         )
-        ingresos_pend = (
-            Ingreso.objects.filter(
-                fecha__year=selected_date.year,
-                fecha__month=selected_date.month,
-                fecha__day=dia,
-                confirmado=False,
-            )
-            .aggregate(total=Sum('monto'))
-            .get('total')
-            or 0
+        gastos_qs = Gasto.objects.filter(
+            fecha__year=selected_date.year,
+            fecha__month=selected_date.month,
+            fecha__day=dia,
         )
-        gastos_pagados = (
-            Gasto.objects.filter(
-                fecha__year=selected_date.year,
-                fecha__month=selected_date.month,
-                fecha__day=dia,
-                pagado=True,
+
+        if es_futuro:
+            ingresos_conf = 0
+            ingresos_pend = ingresos_qs.aggregate(total=Sum('monto')).get('total') or 0
+            gastos_pagados = 0
+            gastos_pend = gastos_qs.aggregate(total=Sum('monto')).get('total') or 0
+        else:
+            ingresos_conf = (
+                ingresos_qs.filter(confirmado=True).aggregate(total=Sum('monto')).get('total') or 0
             )
-            .aggregate(total=Sum('monto'))
-            .get('total')
-            or 0
-        )
-        gastos_pend = (
-            Gasto.objects.filter(
-                fecha__year=selected_date.year,
-                fecha__month=selected_date.month,
-                fecha__day=dia,
-                pagado=False,
+            ingresos_pend = (
+                ingresos_qs.filter(confirmado=False).aggregate(total=Sum('monto')).get('total') or 0
             )
-            .aggregate(total=Sum('monto'))
-            .get('total')
-            or 0
-        )
+            gastos_pagados = (
+                gastos_qs.filter(pagado=True).aggregate(total=Sum('monto')).get('total') or 0
+            )
+            gastos_pend = (
+                gastos_qs.filter(pagado=False).aggregate(total=Sum('monto')).get('total') or 0
+            )
 
         ingresos_confirmados_por_dia.append(float(ingresos_conf))
         ingresos_pendientes_por_dia.append(float(ingresos_pend))
