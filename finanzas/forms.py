@@ -38,6 +38,15 @@ class IngresoForm(forms.ModelForm):
             'monto': forms.NumberInput(attrs={'step': '0.01'}),
         }
 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['deuda_relacionada'].queryset = (
+            self.fields['deuda_relacionada']
+            .queryset
+            .filter(tipo_deuda__in=['tarjeta', 'prestamo', 'otro'])
+            .order_by('entidad__nombre', 'tipo_deuda')
+        )
     def clean_fecha(self):
         value = self.cleaned_data['fecha']
         _validate_fecha(value)
