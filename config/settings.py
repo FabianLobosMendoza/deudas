@@ -82,11 +82,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Usa DATABASE_URL (ej. PostgreSQL en Railway) si está definido, si no SQLite local.
 import dj_database_url
 
+DB_SSL_REQUIRED = os.environ.get('DB_SSL_REQUIRED', 'False') == 'True'
+
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
-        ssl_require=True,
+        ssl_require=DB_SSL_REQUIRED,
     )
 }
 
