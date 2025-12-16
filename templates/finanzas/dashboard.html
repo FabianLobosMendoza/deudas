@@ -77,9 +77,13 @@
 
 <div style="background:white;border-radius:1rem;padding:1rem 1.25rem;box-shadow:0 10px 30px rgba(0,0,0,0.06);margin-bottom:1rem;">
     <h2 style="margin-top:0;">Ingresos vs gastos por dia</h2>
-    <form method="get" style="display:flex;gap:0.75rem;align-items:center;margin:0 0 1rem;flex-wrap:wrap;">
+    <form id="form-mes" method="get" style="display:flex;gap:0.5rem;align-items:center;margin:0 0 1rem;flex-wrap:wrap;">
         <label for="month" style="font-weight:600;">Mes:</label>
         <input type="month" id="month" name="month" value="{{ month_str }}" min="{{ month_min }}" max="{{ month_max }}" style="padding:0.4rem 0.6rem;border:1px solid #d1d5db;border-radius:0.5rem;">
+        <div style="display:flex;gap:0.35rem;">
+            <button type="button" id="year-prev" class="btn" style="padding:0.35rem 0.65rem;">-1 año</button>
+            <button type="button" id="year-next" class="btn" style="padding:0.35rem 0.65rem;">+1 año</button>
+        </div>
         <button type="submit" class="btn">Ver</button>
     </form>
     <canvas id="ingresosGastosDiaChart" style="width:100%;max-width:100%;background:#f9fafb;border:1px dashed #e5e7eb;border-radius:0.75rem;min-height:240px;height:240px;"></canvas>
@@ -92,6 +96,28 @@
         const ingresosData = {{ ingresos_por_dia|safe }};
         const gastosData = {{ gastos_por_dia|safe }};
         const sobranteData = {{ sobrante_por_dia|safe }};
+        const monthInput = document.getElementById('month');
+        const formMes = document.getElementById('form-mes');
+        const minMonth = monthInput.getAttribute('min');
+        const maxMonth = monthInput.getAttribute('max');
+
+        const clampMonth = (value) => {
+            if (minMonth && value < minMonth) return minMonth;
+            if (maxMonth && value > maxMonth) return maxMonth;
+            return value;
+        };
+
+        const shiftYear = (delta) => {
+            if (!monthInput.value) return;
+            const [anio, mes] = monthInput.value.split('-').map(Number);
+            const nuevaFecha = new Date(anio + delta, mes - 1, 1);
+            const nuevoValor = `${nuevaFecha.getFullYear().toString().padStart(4, '0')}-${(nuevaFecha.getMonth() + 1).toString().padStart(2, '0')}`;
+            monthInput.value = clampMonth(nuevoValor);
+            formMes.submit();
+        };
+
+        document.getElementById('year-prev').addEventListener('click', () => shiftYear(-1));
+        document.getElementById('year-next').addEventListener('click', () => shiftYear(1));
 
         const ctx = document.getElementById('ingresosGastosDiaChart').getContext('2d');
         new Chart(ctx, {
