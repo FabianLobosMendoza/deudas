@@ -1,3 +1,4 @@
+import calendar
 from datetime import date, timedelta
 from io import BytesIO
 from pathlib import Path
@@ -41,6 +42,55 @@ def dashboard(request):
         los gastos pendientes en los próximos 30 días.
     """
     today = date.today()
+    month_param = request.GET.get('month')
+
+    if month_param:
+        try:
+            anio_str, mes_str = month_param.split('-')
+            anio_sel = int(anio_str)
+            mes_sel = int(mes_str)
+            selected_date = date(anio_sel, mes_sel, 1)
+        except Exception:  # noqa: BLE001
+            selected_date = date(today.year, today.month, 1)
+    else:
+        selected_date = date(today.year, today.month, 1)
+
+    ultimo_dia = calendar.monthrange(selected_date.year, selected_date.month)[1]
+    dias_labels = list(range(1, ultimo_dia + 1))
+
+    ingresos_por_dia = []
+    gastos_por_dia = []
+    sobrante_por_dia = []
+    saldo_acumulado = 0
+
+    for dia in dias_labels:
+        ingresos_dia = (
+            Ingreso.objects.filter(
+                fecha__year=selected_date.year,
+                fecha__month=selected_date.month,
+                fecha__day=dia,
+                confirmado=True,
+            )
+            .aggregate(total=Sum('monto'))
+            .get('total')
+            or 0
+        )
+        gastos_dia = (
+            Gasto.objects.filter(
+                fecha__year=selected_date.year,
+                fecha__month=selected_date.month,
+                fecha__day=dia,
+                pagado=True,
+            )
+            .aggregate(total=Sum('monto'))
+            .get('total')
+            or 0
+        )
+        ingresos_por_dia.append(float(ingresos_dia))
+        gastos_por_dia.append(float(gastos_dia))
+        saldo_acumulado += float(ingresos_dia) - float(gastos_dia)
+        sobrante_por_dia.append(saldo_acumulado)
+
     treinta_dias = today + timedelta(days=30)
 
     deuda_total = (
@@ -54,6 +104,7 @@ def dashboard(request):
     )
     ingresos_mes = _totales_mes(Ingreso, 'monto')
     gastos_mes = _totales_mes(Gasto, 'monto')
+    saldo_mes = ingresos_mes - gastos_mes
 
     gastos_pendientes = (
         Gasto.objects.filter(
@@ -72,9 +123,14 @@ def dashboard(request):
         'cuota_fija_total': cuota_fija_total,
         'ingresos_mes': ingresos_mes,
         'gastos_mes': gastos_mes,
-        'saldo_mes': ingresos_mes - gastos_mes,
+        'saldo_mes': saldo_mes,
         'gastos_pendientes': gastos_pendientes,
         'relacion_cuotas_ingresos': relacion_cuotas_ingresos,
+        'dias_labels': dias_labels,
+        'ingresos_por_dia': ingresos_por_dia,
+        'gastos_por_dia': gastos_por_dia,
+        'sobrante_por_dia': sobrante_por_dia,
+        'month_str': f'{selected_date.year:04d}-{selected_date.month:02d}',
     }
     return render(request, 'finanzas/dashboard.html', contexto)
 
