@@ -79,7 +79,7 @@
     <h2 style="margin-top:0;">Ingresos vs gastos por dia</h2>
     <form method="get" style="display:flex;gap:0.75rem;align-items:center;margin:0 0 1rem;flex-wrap:wrap;">
         <label for="month" style="font-weight:600;">Mes:</label>
-        <input type="month" id="month" name="month" value="{{ month_str }}" style="padding:0.4rem 0.6rem;border:1px solid #d1d5db;border-radius:0.5rem;">
+        <input type="month" id="month" name="month" value="{{ month_str }}" min="{{ month_min }}" max="{{ month_max }}" style="padding:0.4rem 0.6rem;border:1px solid #d1d5db;border-radius:0.5rem;">
         <button type="submit" class="btn">Ver</button>
     </form>
     <canvas id="ingresosGastosDiaChart" style="width:100%;max-width:100%;background:#f9fafb;border:1px dashed #e5e7eb;border-radius:0.75rem;min-height:240px;height:240px;"></canvas>

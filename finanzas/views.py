@@ -43,6 +43,8 @@ def dashboard(request):
     """
     today = date.today()
     month_param = request.GET.get('month')
+    min_month = date(today.year - 2, today.month, 1)
+    max_month = date(today.year + 2, today.month, 1)
 
     if month_param:
         try:
@@ -54,6 +56,11 @@ def dashboard(request):
             selected_date = date(today.year, today.month, 1)
     else:
         selected_date = date(today.year, today.month, 1)
+
+    if selected_date < min_month:
+        selected_date = min_month
+    elif selected_date > max_month:
+        selected_date = max_month
 
     ultimo_dia = calendar.monthrange(selected_date.year, selected_date.month)[1]
     dias_labels = list(range(1, ultimo_dia + 1))
@@ -131,6 +138,8 @@ def dashboard(request):
         'gastos_por_dia': gastos_por_dia,
         'sobrante_por_dia': sobrante_por_dia,
         'month_str': f'{selected_date.year:04d}-{selected_date.month:02d}',
+        'month_min': f'{min_month.year:04d}-{min_month.month:02d}',
+        'month_max': f'{max_month.year:04d}-{max_month.month:02d}',
     }
     return render(request, 'finanzas/dashboard.html', contexto)
 
