@@ -45,6 +45,7 @@ def dashboard(request):
     month_param = request.GET.get('month')
     min_month = date(today.year - 2, today.month, 1)
     max_month = date(today.year + 2, today.month, 1)
+    medios_flujo = ['efectivo', 'debito']
 
     if month_param:
         try:
@@ -85,6 +86,7 @@ def dashboard(request):
             fecha__year=selected_date.year,
             fecha__month=selected_date.month,
             fecha__day=dia,
+            medio_pago__in=medios_flujo,
         )
 
         if es_futuro:
@@ -128,7 +130,16 @@ def dashboard(request):
         Deuda.objects.aggregate(total=Sum('cuota_mensual_aprox')).get('total') or 0
     )
     ingresos_mes = _totales_mes(Ingreso, 'monto')
-    gastos_mes = _totales_mes(Gasto, 'monto')
+    gastos_mes = (
+        Gasto.objects.filter(
+            fecha__year=today.year,
+            fecha__month=today.month,
+            medio_pago__in=medios_flujo,
+        )
+        .aggregate(total=Sum('monto'))
+        .get('total')
+        or 0
+    )
     saldo_mes = ingresos_mes - gastos_mes
 
     gastos_pendientes = (
@@ -136,6 +147,7 @@ def dashboard(request):
             pagado=False,
             fecha__gte=today,
             fecha__lte=treinta_dias,
+            medio_pago__in=medios_flujo,
         ).order_by('fecha')[:10]
     )
 

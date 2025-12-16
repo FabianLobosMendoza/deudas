@@ -145,6 +145,12 @@ class Gasto(models.Model):
         ('otro', 'Otro'),
     ]
 
+    MEDIO_PAGO_CHOICES = [
+        ('efectivo', 'Efectivo'),
+        ('debito', 'Debito'),
+        ('tarjeta', 'Tarjeta'),
+    ]
+
     fecha = models.DateField()
     tipo = models.CharField(max_length=20, choices=TIPO_GASTO_CHOICES)
     categoria = models.CharField(
@@ -156,6 +162,12 @@ class Gasto(models.Model):
     pagado = models.BooleanField(
         default=False,
         help_text='Marcar cuando el gasto ya está pagado.',
+    )
+    medio_pago = models.CharField(
+        max_length=20,
+        choices=MEDIO_PAGO_CHOICES,
+        default='efectivo',
+        help_text='efectivo/debito descuentan ahora; tarjeta se descuenta al pagar.',
     )
 
     deuda_relacionada = models.ForeignKey(
@@ -193,6 +205,11 @@ class Gasto(models.Model):
         if dias == 0:
             return 'hoy'
         return 'por_vencer'
+
+    @property
+    def impacta_flujo(self) -> bool:
+        """True si debe descontarse hoy del flujo (efectivo o debito)."""
+        return self.medio_pago in ['efectivo', 'debito']
 
 
 class Vencimiento(models.Model):

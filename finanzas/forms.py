@@ -47,6 +47,16 @@ class IngresoForm(forms.ModelForm):
             .filter(tipo_deuda__in=['tarjeta', 'prestamo', 'otro'])
             .order_by('entidad__nombre', 'tipo_deuda')
         )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'deuda_relacionada' in self.fields:
+            self.fields['deuda_relacionada'].queryset = (
+                self.fields['deuda_relacionada']
+                .queryset
+                .filter(tipo_deuda__in=['tarjeta', 'prestamo', 'otro'])
+                .order_by('entidad__nombre', 'tipo_deuda')
+            )
+
     def clean_fecha(self):
         value = self.cleaned_data['fecha']
         _validate_fecha(value)
@@ -64,6 +74,7 @@ class GastoForm(forms.ModelForm):
         fields = [
             'fecha',
             'tipo',
+            'medio_pago',
             'categoria',
             'descripcion',
             'monto',
@@ -75,8 +86,19 @@ class GastoForm(forms.ModelForm):
             'monto': forms.NumberInput(attrs={'step': '0.01'}),
         }
         help_texts = {
-            'deuda_relacionada': 'Si es un pago de deuda, vincúlalo aquí.',
+            'deuda_relacionada': 'Si es un pago de deuda, vincula el movimiento.',
+            'medio_pago': 'Efectivo/debito descuenta ahora; tarjeta descuenta al pagarla.',
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'deuda_relacionada' in self.fields:
+            self.fields['deuda_relacionada'].queryset = (
+                self.fields['deuda_relacionada']
+                .queryset
+                .filter(tipo_deuda__in=['tarjeta', 'prestamo', 'otro'])
+                .order_by('entidad__nombre', 'tipo_deuda')
+            )
 
     def clean_fecha(self):
         value = self.cleaned_data['fecha']
