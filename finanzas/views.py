@@ -125,6 +125,10 @@ def dashboard(request):
     if ingresos_mes > 0:
         relacion_cuotas_ingresos = (cuota_fija_total / ingresos_mes) * 100
 
+    dia_hoy = None
+    if selected_date.year == today.year and selected_date.month == today.month:
+        dia_hoy = today.day
+
     contexto = {
         'deuda_total': deuda_total,
         'cuota_fija_total': cuota_fija_total,
@@ -140,6 +144,7 @@ def dashboard(request):
         'month_str': f'{selected_date.year:04d}-{selected_date.month:02d}',
         'month_min': f'{min_month.year:04d}-{min_month.month:02d}',
         'month_max': f'{max_month.year:04d}-{max_month.month:02d}',
+        'dia_hoy': dia_hoy,
     }
     return render(request, 'finanzas/dashboard.html', contexto)
 

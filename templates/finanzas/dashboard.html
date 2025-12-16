@@ -100,6 +100,7 @@
         const formMes = document.getElementById('form-mes');
         const minMonth = monthInput.getAttribute('min');
         const maxMonth = monthInput.getAttribute('max');
+        const todayDay = {{ dia_hoy|default:"null" }};
 
         const clampMonth = (value) => {
             if (minMonth && value < minMonth) return minMonth;
@@ -118,6 +119,28 @@
 
         document.getElementById('year-prev').addEventListener('click', () => shiftYear(-1));
         document.getElementById('year-next').addEventListener('click', () => shiftYear(1));
+
+        const hoyPlugin = {
+            id: 'hoyPlugin',
+            afterDatasetsDraw(chart) {
+                if (todayDay === null) return;
+                const index = diasLabels.indexOf(todayDay);
+                if (index === -1) return;
+                const xScale = chart.scales.x;
+                const yScale = chart.scales.y;
+                const x = xScale.getPixelForValue(index);
+                const ctx = chart.ctx;
+                ctx.save();
+                ctx.strokeStyle = 'rgba(37, 99, 235, 0.6)';
+                ctx.setLineDash([6, 4]);
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(x, yScale.top);
+                ctx.lineTo(x, yScale.bottom);
+                ctx.stroke();
+                ctx.restore();
+            },
+        };
 
         const ctx = document.getElementById('ingresosGastosDiaChart').getContext('2d');
         new Chart(ctx, {
@@ -173,7 +196,8 @@
                         beginAtZero: true,
                     }
                 }
-            }
+            },
+            plugins: [hoyPlugin],
         });
     })();
 </script>
