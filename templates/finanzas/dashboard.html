@@ -93,8 +93,10 @@
 <script>
     (function () {
         const diasLabels = {{ dias_labels|safe }};
-        const ingresosData = {{ ingresos_por_dia|safe }};
-        const gastosData = {{ gastos_por_dia|safe }};
+        const ingresosConfirmados = {{ ingresos_confirmados_por_dia|safe }};
+        const ingresosPendientes = {{ ingresos_pendientes_por_dia|safe }};
+        const gastosPagados = {{ gastos_pagados_por_dia|safe }};
+        const gastosPendientes = {{ gastos_pendientes_por_dia|safe }};
         const sobranteData = {{ sobrante_por_dia|safe }};
         const monthInput = document.getElementById('month');
         const formMes = document.getElementById('form-mes');
@@ -150,13 +152,27 @@
                 datasets: [
                     {
                         label: 'Ingresos',
-                        data: ingresosData,
+                        data: ingresosConfirmados,
                         backgroundColor: 'rgba(34, 197, 94, 0.8)',
                     },
                     {
+                        label: 'Ingresos programados',
+                        data: ingresosPendientes,
+                        backgroundColor: 'rgba(74, 222, 128, 0.35)',
+                        borderColor: 'rgba(22, 163, 74, 0.6)',
+                        borderWidth: 1,
+                    },
+                    {
                         label: 'Gastos',
-                        data: gastosData,
+                        data: gastosPagados,
                         backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                    },
+                    {
+                        label: 'Gastos programados',
+                        data: gastosPendientes,
+                        backgroundColor: 'rgba(248, 113, 113, 0.35)',
+                        borderColor: 'rgba(220, 38, 38, 0.6)',
+                        borderWidth: 1,
                     },
                     {
                         type: 'line',

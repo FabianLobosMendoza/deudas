@@ -65,13 +65,15 @@ def dashboard(request):
     ultimo_dia = calendar.monthrange(selected_date.year, selected_date.month)[1]
     dias_labels = list(range(1, ultimo_dia + 1))
 
-    ingresos_por_dia = []
-    gastos_por_dia = []
+    ingresos_confirmados_por_dia = []
+    ingresos_pendientes_por_dia = []
+    gastos_pagados_por_dia = []
+    gastos_pendientes_por_dia = []
     sobrante_por_dia = []
     saldo_acumulado = 0
 
     for dia in dias_labels:
-        ingresos_dia = (
+        ingresos_conf = (
             Ingreso.objects.filter(
                 fecha__year=selected_date.year,
                 fecha__month=selected_date.month,
@@ -82,7 +84,18 @@ def dashboard(request):
             .get('total')
             or 0
         )
-        gastos_dia = (
+        ingresos_pend = (
+            Ingreso.objects.filter(
+                fecha__year=selected_date.year,
+                fecha__month=selected_date.month,
+                fecha__day=dia,
+                confirmado=False,
+            )
+            .aggregate(total=Sum('monto'))
+            .get('total')
+            or 0
+        )
+        gastos_pagados = (
             Gasto.objects.filter(
                 fecha__year=selected_date.year,
                 fecha__month=selected_date.month,
@@ -93,9 +106,26 @@ def dashboard(request):
             .get('total')
             or 0
         )
-        ingresos_por_dia.append(float(ingresos_dia))
-        gastos_por_dia.append(float(gastos_dia))
-        saldo_acumulado += float(ingresos_dia) - float(gastos_dia)
+        gastos_pend = (
+            Gasto.objects.filter(
+                fecha__year=selected_date.year,
+                fecha__month=selected_date.month,
+                fecha__day=dia,
+                pagado=False,
+            )
+            .aggregate(total=Sum('monto'))
+            .get('total')
+            or 0
+        )
+
+        ingresos_confirmados_por_dia.append(float(ingresos_conf))
+        ingresos_pendientes_por_dia.append(float(ingresos_pend))
+        gastos_pagados_por_dia.append(float(gastos_pagados))
+        gastos_pendientes_por_dia.append(float(gastos_pend))
+
+        saldo_acumulado += float(ingresos_conf + ingresos_pend) - float(
+            gastos_pagados + gastos_pend
+        )
         sobrante_por_dia.append(saldo_acumulado)
 
     treinta_dias = today + timedelta(days=30)
@@ -138,8 +168,10 @@ def dashboard(request):
         'gastos_pendientes': gastos_pendientes,
         'relacion_cuotas_ingresos': relacion_cuotas_ingresos,
         'dias_labels': dias_labels,
-        'ingresos_por_dia': ingresos_por_dia,
-        'gastos_por_dia': gastos_por_dia,
+        'ingresos_confirmados_por_dia': ingresos_confirmados_por_dia,
+        'ingresos_pendientes_por_dia': ingresos_pendientes_por_dia,
+        'gastos_pagados_por_dia': gastos_pagados_por_dia,
+        'gastos_pendientes_por_dia': gastos_pendientes_por_dia,
         'sobrante_por_dia': sobrante_por_dia,
         'month_str': f'{selected_date.year:04d}-{selected_date.month:02d}',
         'month_min': f'{min_month.year:04d}-{min_month.month:02d}',
