@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-+sc8@x1@%vzu3j81u7$ei3gd4&14422+(6*eka!3h3!93fhok3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -119,6 +119,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'finanzas:dashboard'
