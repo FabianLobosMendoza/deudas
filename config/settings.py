@@ -27,12 +27,7 @@ SECRET_KEY = 'django-insecure-+sc8@x1@%vzu3j81u7$ei3gd4&14422+(6*eka!3h3!93fhok3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
-
-CSRF_TRUSTED_ORIGINS = os.environ.get(
-    'CSRF_TRUSTED_ORIGINS',
-    'https://*.up.railway.app'
-).split(',')
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -79,17 +74,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
-# Usa DATABASE_URL (ej. PostgreSQL en Railway) si está definido, si no SQLite local.
-import dj_database_url
-
-DB_SSL_REQUIRED = os.environ.get('DB_SSL_REQUIRED', 'False') == 'True'
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        ssl_require=DB_SSL_REQUIRED,
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 
@@ -128,7 +119,6 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'finanzas:dashboard'
