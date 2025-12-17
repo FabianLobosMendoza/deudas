@@ -94,31 +94,35 @@ PG_PORT = os.environ.get('POSTGRES_PORT', '5432')
 DATABASE_URL = os.environ.get('DATABASE_URL')
 DB_CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', '60'))
 
+db_config = None
+
 if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.parse(
-            DATABASE_URL, conn_max_age=DB_CONN_MAX_AGE, ssl_require=True
-        )
-    }
+    db_config = dj_database_url.config(
+        default=DATABASE_URL, conn_max_age=DB_CONN_MAX_AGE, ssl_require=True
+    )
 elif PG_NAME and PG_USER:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': PG_NAME,
-            'USER': PG_USER,
-            'PASSWORD': PG_PASSWORD,
-            'HOST': PG_HOST,
-            'PORT': PG_PORT,
-            'CONN_MAX_AGE': DB_CONN_MAX_AGE,
-        }
+    db_config = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': PG_NAME,
+        'USER': PG_USER,
+        'PASSWORD': PG_PASSWORD,
+        'HOST': PG_HOST,
+        'PORT': PG_PORT,
+        'CONN_MAX_AGE': DB_CONN_MAX_AGE,
     }
-else:
+
+if db_config:
+    DATABASES = {'default': db_config}
+elif DEBUG:
+    # Solo permitido en desarrollo si no hay configuracion de Postgres.
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+else:
+    raise RuntimeError('DATABASE_URL o POSTGRES_* deben estar configurados en produccion')
 
 
 # Password validation

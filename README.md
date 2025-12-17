@@ -80,14 +80,37 @@ Aplicacion web para organizar deudas, ingresos y gastos, con dashboard, carga ra
 
 ---
 
-## Deploy en Render (SQLite, sin Postgres)
-- Render usa un disco efimero: cada redeploy borra el `db.sqlite3`. Adecuado solo para pruebas/demo, no para produccion.
-1. Usa `render.yaml` para crear el servicio web (Blueprint):
-   - `buildCommand`: instala dependencias y ejecuta `collectstatic --noinput`.
-   - `startCommand`: `gunicorn config.wsgi:application --bind 0.0.0.0:8000`.
-   - `migrateCommand`: `python manage.py migrate --noinput` (crea/actualiza `db.sqlite3` en el disco efimero).
-2. Variables necesarias:
-   - `DJANGO_SECRET_KEY` (sync: false).
-   - `DJANGO_DEBUG=False`.
-   - `PYTHON_VERSION=3.12`.
-3. Render setea `RENDER_EXTERNAL_HOSTNAME` automaticamente; se usa en `ALLOWED_HOSTS` y `CSRF_TRUSTED_ORIGINS`.
+## Base de datos (Postgres) y Render
+- En produccion se requiere `DATABASE_URL` (Postgres); no se usa SQLite.
+- Variables de entorno minimas:
+  - `DATABASE_URL` (Render Postgres)
+  - `DJANGO_SECRET_KEY`
+  - `DJANGO_DEBUG=False`
+  - `PYTHON_VERSION=3.12`
+- Comandos recomendados en Render:
+  - Build: `pip install -r requirements.txt`
+  - Start (incluye migracion): `python manage.py migrate --noinput && gunicorn config.wsgi:application --chdir /opt/render/project/src --bind 0.0.0.0:8000`
+- Para crear superusuario en Render (sin shell), agregar temporalmente:
+  - `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_PASSWORD`, `DJANGO_SUPERUSER_EMAIL`
+  - Start temporal: `python manage.py migrate --noinput && DJANGO_SUPERUSER_USERNAME=$DJANGO_SUPERUSER_USERNAME DJANGO_SUPERUSER_PASSWORD=$DJANGO_SUPERUSER_PASSWORD DJANGO_SUPERUSER_EMAIL=$DJANGO_SUPERUSER_EMAIL python manage.py createsuperuser --noinput || true && gunicorn config.wsgi:application --chdir /opt/render/project/src --bind 0.0.0.0:8000`
+  - Luego quitar las vars y dejar el Start normal.
+
+### Migrar datos desde SQLite a Postgres
+1. En tu entorno local (usando la SQLite actual):
+   ```powershell
+   python manage.py dumpdata --exclude auth.permission --exclude contenttypes --natural-foreign --natural-primary > dump.json
+   ```
+2. Exporta `DATABASE_URL` apuntando a Postgres (Render o local) y migra:
+   ```powershell
+   $env:DATABASE_URL="postgres://..."
+   python manage.py migrate --noinput
+   ```
+3. Carga los datos:
+   ```powershell
+   python manage.py loaddata dump.json
+   ```
+4. (Opcional) Reajusta secuencias en Postgres:
+   ```powershell
+   python manage.py sqlsequencereset auth finanzas | psql "$env:DATABASE_URL"
+   ```
+5. No subas `dump.json` al repo (esta en `.gitignore`); solo usalo para la migracion.
