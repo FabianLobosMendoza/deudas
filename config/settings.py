@@ -92,11 +92,12 @@ PG_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
 PG_HOST = os.environ.get('POSTGRES_HOST', 'localhost')
 PG_PORT = os.environ.get('POSTGRES_PORT', '5432')
 DATABASE_URL = os.environ.get('DATABASE_URL')
+DB_CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', '60'))
 
 if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.parse(
-            DATABASE_URL, conn_max_age=600, ssl_require=True
+            DATABASE_URL, conn_max_age=DB_CONN_MAX_AGE, ssl_require=True
         )
     }
 elif PG_NAME and PG_USER:
@@ -108,6 +109,7 @@ elif PG_NAME and PG_USER:
             'PASSWORD': PG_PASSWORD,
             'HOST': PG_HOST,
             'PORT': PG_PORT,
+            'CONN_MAX_AGE': DB_CONN_MAX_AGE,
         }
     }
 else:
