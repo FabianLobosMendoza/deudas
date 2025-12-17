@@ -74,14 +74,31 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+# Usa PostgreSQL si hay variables de entorno definidas; si no, cae a SQLite local.
+PG_NAME = os.environ.get('POSTGRES_DB')
+PG_USER = os.environ.get('POSTGRES_USER')
+PG_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
+PG_HOST = os.environ.get('POSTGRES_HOST', 'localhost')
+PG_PORT = os.environ.get('POSTGRES_PORT', '5432')
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if PG_NAME and PG_USER:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': PG_NAME,
+            'USER': PG_USER,
+            'PASSWORD': PG_PASSWORD,
+            'HOST': PG_HOST,
+            'PORT': PG_PORT,
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation

@@ -4,6 +4,13 @@ setlocal
 REM Activar entorno virtual si existe
 if exist "venv\Scripts\activate.bat" call "venv\Scripts\activate.bat"
 
+REM Configuracion de Postgres (ajusta estos valores a tu entorno local)
+set POSTGRES_DB=deudas
+set POSTGRES_USER=postgres
+set POSTGRES_PASSWORD=postgres
+set POSTGRES_HOST=localhost
+set POSTGRES_PORT=5432
+
 REM Iniciar el servidor en una ventana nueva
 start "django-server" cmd /c "python manage.py runserver"
 
