@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: tablero-financiero
+    env: python
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    migrateCommand: python manage.py migrate --noinput
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_SECRET_KEY
+        sync: false
+      - key: PYTHON_VERSION
+        value: "3.12"

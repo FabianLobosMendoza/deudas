@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,12 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # En producción, obtener desde variable de entorno.
-SECRET_KEY = 'django-insecure-+sc8@x1@%vzu3j81u7$ei3gd4&14422+(6*eka!3h3!93fhok3'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    raise RuntimeError('Set DJANGO_SECRET_KEY or SECRET_KEY environment variable')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if render_host:
+    ALLOWED_HOSTS.append(render_host)
+
+CSRF_TRUSTED_ORIGINS = []
+if render_host:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{render_host}')
 
 
 # Application definition
@@ -45,6 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -80,8 +91,15 @@ PG_USER = os.environ.get('POSTGRES_USER')
 PG_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
 PG_HOST = os.environ.get('POSTGRES_HOST', 'localhost')
 PG_PORT = os.environ.get('POSTGRES_PORT', '5432')
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if PG_NAME and PG_USER:
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(
+            DATABASE_URL, conn_max_age=600, ssl_require=True
+        )
+    }
+elif PG_NAME and PG_USER:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -136,6 +154,8 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'finanzas:dashboard'
